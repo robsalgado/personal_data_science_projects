@@ -6,7 +6,7 @@ Trying to predict a states breweries per capita (BPC) using different models
 
 Notebooks
 
-1. personal_data_science_projects/Breweries Per Capita by State - Data Prep .ipynb
+1. personal_data_science_projects/Breweries Per Capita by State - Data Prep.ipynb
 2. personal_data_science_projects/Web Scraper - Brewer's Association Stats.ipynb
 3. personal_data_science_projects/Breweries Per Capita by State - Exploratory Data Analysis & Linear Model Evaluation.ipynb
 
