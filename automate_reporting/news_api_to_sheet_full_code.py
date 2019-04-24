@@ -1,4 +1,3 @@
-
 # Import required libraries
 import pandas as pd
 import numpy as np
@@ -37,6 +36,8 @@ content, title, url, name, date = [], [], [], [], []
 
 # Loop through the json and add the data to the list
 for each in total_results['articles']:
+    # Some articles don't have content just a title so we check for that
+    # if we don't find it we add in a NaN
     if 'content' in each:
         content.append(each['content'])
     else:
@@ -56,15 +57,15 @@ df.columns = ['title', 'content', 'url', 'site', 'date']
 # Define the scopes
 scopes = ['https://www.googleapis.com/auth/spreadsheets']
 
-# Define the credentials
+# Define the credentials. Add your path to the credentials file
 credentials = service_account.Credentials.from_service_account_file('<PATH TO CREDENTIALS JSON>',
                                                                     scopes=scopes)
+# Build the service
 service = discovery.build('sheets', 
                           'v4', 
                           credentials=credentials)
 
-spreadsheet_id = '19uEbvGK1RxrI0BHHpgE8nMuGqrwqrowmo0pGngf25-c'
-
+# Format the df to pass into the sheets api
 # This will create a df with the headers as the first row
 with_headers = pd.DataFrame(np.vstack([df.columns, df]))
 
@@ -75,6 +76,9 @@ with_headers = pd.DataFrame(np.vstack([df.columns, df]))
 # Then put each column into a list
 values = [with_headers[each_col].tolist() for each_col in with_headers]
 
+# Define the spreadhseet id
+spreadsheet_id = '19uEbvGK1RxrI0BHHpgE8nMuGqrwqrowmo0pGngf25-c'
+
 # Define the range for the data
 range_ = sheet_name + '!A2:E'
 
@@ -82,7 +86,7 @@ range_ = sheet_name + '!A2:E'
 value_input_option = 'RAW'  # Store values as they are
 
 # How the input data should be inserted
-insert_data_option = 'INSERT_ROWS' # Rows are insterted as opposed to overwriting
+insert_data_option = 'INSERT_ROWS' # Rows are inserted as opposed to overwriting
 
 # Define the data fields and set major dimension to columns 
 # The default is rows which will transpose each column as a row which you don't want
@@ -98,4 +102,3 @@ request = service.spreadsheets().values().append(spreadsheetId=spreadsheet_id,
 
 # Print out the number of rows to verify
 print('Number of rows inserted {}'.format(request['updates']['updatedRows']))
-
