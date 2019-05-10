@@ -1,1 +1,1 @@
-# personal_data_science_projects
+Personal projects for fun
