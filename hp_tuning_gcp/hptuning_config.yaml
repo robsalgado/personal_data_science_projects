@@ -1,0 +1,39 @@
+trainingInput:
+  hyperparameters:
+    goal: MAXIMIZE
+    maxTrials: 50
+    maxParallelTrials: 0
+    hyperparameterMetricTag: accuracy
+    enableTrialEarlyStopping: TRUE 
+    params:
+    - parameterName: n_components
+      type: DISCRETE
+      discreteValues: [
+          50,
+          100,
+          150,
+          200
+          ]
+    - parameterName: alpha
+      type: DOUBLE
+      minValue:  0.000001
+      maxValue:  0.01
+      scaleType: UNIT_LINEAR_SCALE
+    - parameterName: max_iter
+      type: INTEGER
+      minValue: 1000
+      maxValue: 3000
+      scaleType: UNIT_LINEAR_SCALE   
+    - parameterName: loss
+      type: CATEGORICAL
+      categoricalValues: [
+          "log",
+          "hinge"
+          ]
+    - parameterName: penalty
+      type: CATEGORICAL
+      categoricalValues: [
+          "l1",
+          "l2"
+          ]
+      
