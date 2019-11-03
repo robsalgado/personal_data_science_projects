@@ -2,7 +2,7 @@ pandas==0.23.0
 numpy==1.15.4
 json==2.0.9
 sklearn==0.20.2
-nltk==3.2.4
+nltk==3.4.5
 re==2.2.1
 bs4==4.6.3
 gensim==3.4.0
