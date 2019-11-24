@@ -1,0 +1,10 @@
+pandas==0.23.3
+numpy==1.15.1
+google-cloud-bigquery==1.9.0
+pyarrow==0.12.0
+requests==2.22.0
+google-cloud-storage==1.13.2
+scipy==1.2.1
+alpaca-trade-api==0.41
+pyportfolioopt==0.4.3
+scikit-learn==0.21.3
