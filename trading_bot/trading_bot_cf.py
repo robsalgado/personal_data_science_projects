@@ -321,15 +321,16 @@ def trade_bot(event, context):
             def df_buy_new(df_pf, df_buy):
                 # Left merge to get any new stocks or see if they changed qty
                 df_buy_new = pd.merge(
-                    df_pf,
                     df_buy,
+                    df_pf,
                     on='symbol',
                     how='left'
                     )
 
                 # Get the qty we need to increase our positions by
-                df_buy_new['qty_new'] = df_buy_new['qty_y'] - df_buy_new['qty_x']
-                
+                df_buy_new = df_buy_new.fillna(0)
+                df_buy_new['qty_new'] = df_buy_new['qty_x'] - df_buy_new['qty_y']
+
                 # Filter for only shares that increased
                 df_buy_new = df_buy_new.loc[df_buy_new['qty_new'] > 0]
                 if df_buy_new.shape[0] > 0:
@@ -340,7 +341,7 @@ def trade_bot(event, context):
                     df_buy_new = df_buy_new.rename(columns={'qty_new': 'qty'})
                 else:
                     df_buy_new = None
-                    
+
                 return df_buy_new
 
             # Call the function
