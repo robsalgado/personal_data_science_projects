@@ -246,9 +246,8 @@ def trade_bot(event, context):
 
             # Get a list of all stocks to sell i.e. any not in the current df_buy and any diff in qty
             def stock_diffs(df_sell, df_pf, df_buy):
-                # Select only the columns we need
                 df_stocks_held_prev = df_pf[['symbol', 'qty']]
-                df_stocks_held_curr = df_buy[['symbol', 'qty', 'date', 'close']]
+                df_stocks_held_curr = df_buy[['symbol', 'qty', 'close']]
 
                 # Inner merge to get the stocks that are the same week to week
                 df_stock_diff = pd.merge(
@@ -258,38 +257,43 @@ def trade_bot(event, context):
                     how='inner'
                 )
 
-                # Calculate any difference in positions based on the new pf
-                df_stock_diff['share_amt_change'] = df_stock_diff['qty_x'] - df_stock_diff['qty_y']
+                # Check to make sure not all of the stocks are different compared to what we have in the pf
+                if df_stock_diff.shape[0] > 0:
+                    # Calculate any difference in positions based on the new pf
+                    df_stock_diff['share_amt_change'] = df_stock_diff['qty_x'] - df_stock_diff['qty_y']
 
-                # Create df with the share difference and current closing price
-                df_stock_diff = df_stock_diff[[
-                    'symbol',
-                    'share_amt_change',
-                    'close'
-                    ]]
+                    # Create df with the share difference and current closing price
+                    df_stock_diff = df_stock_diff[[
+                        'symbol',
+                        'share_amt_change',
+                        'close'
+                        ]]
 
-                # If there's less shares compared to last week for the stocks that
-                # are still in our portfolio, sell those shares
-                df_stock_diff_sale = df_stock_diff.loc[df_stock_diff['share_amt_change'] < 0]
+                    # If there's less shares compared to last week for the stocks that
+                    # are still in our portfolio, sell those shares
+                    df_stock_diff_sale = df_stock_diff.loc[df_stock_diff['share_amt_change'] < 0]
 
-                # If there are stocks whose qty decreased, 
-                # add the df with the stocks that dropped out of the pf
-                if df_stock_diff_sale.shape[0] > 0:
-                    if df_sell is not None:
-                        df_sell_final = pd.concat([df_sell, df_stock_diff_sale])
-                        # Fill in NaNs in the share amount change column with
-                        # the qty of the stocks no longer in the pf
-                        df_sell_final['share_amt_change'] = df_sell_final['share_amt_change'].fillna(df_sell_final['qty'])
-                        # Turn the negative numbers into positive for the order
-                        df_sell_final['share_amt_change'] = np.abs(df_sell_final['share_amt_change'])
-                        df_sell_final = df_sell_final.rename(columns={'share_amt_change': 'qty'})
+                    # If there are stocks whose qty decreased,
+                    # add the df with the stocks that dropped out of the pf
+                    if df_stock_diff_sale.shape[0] > 0:
+                        if df_sell is not None:
+                            df_sell_final = pd.concat([df_sell, df_stock_diff_sale], sort=True)
+                            # Fill in NaNs in the share amount change column with
+                            # the qty of the stocks no longer in the pf, then drop the qty columns
+                            df_sell_final['share_amt_change'] = df_sell_final['share_amt_change'].fillna(df_sell_final['qty'])
+                            df_sell_final = df_sell_final.drop(['qty'], 1)
+                            # Turn the negative numbers into positive for the order
+                            df_sell_final['share_amt_change'] = np.abs(df_sell_final['share_amt_change'])
+                            df_sell_final.columns = df_sell_final.columns.str.replace('share_amt_change', 'qty')
+                        else:
+                            df_sell_final = df_stock_diff_sale
+                            # Turn the negative numbers into positive for the order
+                            df_sell_final['share_amt_change'] = np.abs(df_sell_final['share_amt_change'])
+                            df_sell_final.columns = df_sell_final.columns.str.replace('share_amt_change', 'qty')
                     else:
-                        df_sell_final = df_stock_diff_sale
-                        # Turn the negative numbers into positive for the order
-                        df_sell_final['share_amt_change'] = np.abs(df_sell_final['share_amt_change'])
-                        df_sell_final = df_sell_final.rename(columns={'share_amt_change': 'qty'})
+                        df_sell_final = None
                 else:
-                    df_sell_final = None
+                    df_sell_final = df_stocks_held_curr
 
                 return df_sell_final
                 
