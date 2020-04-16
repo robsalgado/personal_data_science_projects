@@ -1,0 +1,4 @@
+pandas==0.25.0
+numpy==1.17.5
+beautifulsoup4==4.8.2
+fake-useragent==0.1.11
