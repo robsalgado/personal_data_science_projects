@@ -1,5 +1,5 @@
 requests==2.18.4
 pandas==0.24.1
 numpy==1.15.4
-httplib2==0.11.3
+httplib2>=0.18.0
 google-api-python-client==1.7.8
