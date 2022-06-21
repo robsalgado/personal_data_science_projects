@@ -1,5 +1,5 @@
 pandas==0.23.0
-numpy==1.15.4
+numpy==1.22.0
 json==2.0.9
 sklearn==0.20.2
 nltk==3.4.5
