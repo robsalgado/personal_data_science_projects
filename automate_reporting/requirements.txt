@@ -1,4 +1,4 @@
-requests==2.18.4
+requests==2.31.0
 pandas==0.24.1
 numpy==1.15.4
 httplib2>=0.18.0
